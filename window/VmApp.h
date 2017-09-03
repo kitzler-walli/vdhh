@@ -16,6 +16,7 @@
  */
 
 #import "VmView.h"
+#import "VmWindow.h"
 #import <VMManager/VMManager.h>
 #import <Cocoa/Cocoa.h>
 
@@ -24,7 +25,7 @@
 @property (nonatomic, readonly) VM* vm;
 @property (nonatomic, readonly) VmView *vmView;
 
-@property NSWindow *normalWindow;
+@property VmWindow *normalWindow;
 @property (strong) NSWindowController *rootController;
 
 - (instancetype)initWithVM:(VM*)vm;

@@ -48,6 +48,10 @@ extern char **gArgv;
 {
     if ([event type] == NSKeyUp && ([event modifierFlags] & NSCommandKeyMask))
         [[self keyWindow] sendEvent:event];
+    else if (event.type == NSEventTypeKeyDown &&
+             [event.charactersIgnoringModifiers isEqualToString:@"\t"] &&
+             (event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask) == NSEventModifierFlagControl)
+        [[self keyWindow] sendEvent:event];
     else
         [super sendEvent:event];
 }
@@ -465,7 +469,7 @@ static void on_vm_created(void* opaque)
         self.observer = [ScopedValueObserver new];
 
         // create a window
-        self.normalWindow = [[NSWindow alloc] initWithContentRect: NSMakeRect(0.0, 0.0, 640.0, 480.0)
+        self.normalWindow = [[VmWindow alloc] initWithContentRect: NSMakeRect(0.0, 0.0, 640.0, 480.0)
                                                    styleMask:NSTitledWindowMask|NSMiniaturizableWindowMask|NSClosableWindowMask|NSResizableWindowMask
                                                      backing:NSBackingStoreNonretained defer:NO];
         if(!self.normalWindow) {
@@ -483,6 +487,7 @@ static void on_vm_created(void* opaque)
         self.vmView = [[VmView alloc] initWithFrame: scrollView.frame pixelFormat:[NSOpenGLView defaultPixelFormat]];
         // the scroll view should have both horizontal
         // and vertical scrollers
+        self.normalWindow.vmview = self.vmView;
         [scrollView setHasVerticalScroller:YES];
         [scrollView setHasHorizontalScroller:YES];
         

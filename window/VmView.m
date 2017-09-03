@@ -621,10 +621,21 @@ NSTrackingRectTag trackingRect;
     
     // handle control + alt Key Combos (ctrl+alt is reserved for QEMU)
     if (vmx_console_is_graphic(NULL)) {
-        vmx_mutex_lock_iothread();
-        vmx_input_event_send_key_number(dcl->con, keycode, true);
-        vmx_mutex_unlock_iothread();
-        
+        //remap cmd+<x,c,v> to ctrl+<x,c,v>
+        if(modifiers_state[219] == 1 && (keycode == 45 || keycode == 46 || keycode == 47)){
+            vmx_mutex_lock_iothread();
+            //vmx_input_event_send_key_number(dcl->con, 219, false);
+            vmx_input_event_send_key_number(dcl->con, 29, true);
+            vmx_input_event_send_key_number(dcl->con, keycode, true);
+            vmx_input_event_send_key_number(dcl->con, 29, false);
+            vmx_mutex_unlock_iothread();
+            
+        }
+        else {
+            vmx_mutex_lock_iothread();
+            vmx_input_event_send_key_number(dcl->con, keycode, true);
+            vmx_mutex_unlock_iothread();
+        }
         // handlekeys for Monitor
     } else {
         int keysym = 0;
@@ -719,7 +730,7 @@ NSTrackingRectTag trackingRect;
     }
 
     // release Mouse grab when pressing ctrl+alt
-    if (([event modifierFlags] & NSControlKeyMask) && ([event modifierFlags] & NSAlternateKeyMask))
+    if (([event modifierFlags] & NSControlKeyMask) && ([event modifierFlags] & NSCommandKeyMask))
         [self ungrabMouse];
 }
 
